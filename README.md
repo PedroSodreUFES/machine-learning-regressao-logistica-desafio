@@ -1,4 +1,4 @@
-# Regressão Logística - CLassificador para Estrelas de Nêutrons Pulsares
+# Regressão Logística - Classificador para Estrelas de Nêutrons Pulsares
 
 ![Python](https://img.shields.io/badge/Python-3.11.0-orange?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-orange?style=for-the-badge&logo=fastapi&logoColor=white)
