@@ -12,7 +12,7 @@ print(df_pulsar.describe())
 # 2: Análise Exploratória dos Dados (EDA)
 sns.lineplot(
   x=list(range(-5,6)),
-  y=[x*x*x for x in range(-5, 6)],
+  y=[x**3 for x in range(-5, 6)],
   color='#ff4000',
 )
 plt.savefig("./dataviz/test-image.png")

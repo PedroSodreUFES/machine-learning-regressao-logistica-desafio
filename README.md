@@ -131,7 +131,7 @@ O modelo com tuning de hiperparâmetros não resultou em uma melhora do modelo, 
 |:-:|
 |≃ 0.841457|
 
-A área sob a curva foi de ≃ 0.8415 unidades quadraticas. Um classificador aleatório que chuta aleatoriamente a classificação tem 50% de acerto, ou seja, tem uma área de 0.5, cuja curva representa a reta vermelha no gráfico. **Por ter uma curva acima dessa linha/ter uma área maior que essa linha, o modelo é melhor que um classificador aletório.**
+A área sob a curva foi de ≃ 0.8415 unidades de área(u.a). Um classificador aleatório que chuta aleatoriamente a classificação tem 50% de acerto, ou seja, tem uma área de 0.5, cuja curva representa a reta vermelha no gráfico. **Por ter uma curva acima dessa linha/ter uma área maior que essa linha, o modelo é melhor que um classificador aletório.**
 
 ### F1-Score, Accuracy e Precision
 |F1-Score|Acuracy|Precision|
