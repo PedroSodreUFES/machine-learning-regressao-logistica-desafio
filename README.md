@@ -78,9 +78,9 @@ A distribuição da variável target é desbalanceada. Sabendo disso, classifica
 ### Análises Bivariadas
 ![Matriz de Correlação de Pearson](./dataviz/pearson-correlation.png)
 
-A matriz de correlação de Pearson já revela que a curva DM-SNR tem os valores que menos impactam linearmente falando como um todo, pois das 8 variáveis independentes, as 3 mais correlacionadas não estão nesta curva. Issojá sugere que talvez não seja preciso usar todas as variáveis para o modelo de classificação.
+A matriz de correlação de Pearson já revela que a curva DM-SNR tem os valores que menos impactam linearmente falando como um todo, pois das 8 variáveis independentes, as 3 mais correlacionadas não estão nesta curva. Isto já sugere que talvez não seja preciso usar todas as variáveis para o modelo de classificação.
 
-Por conta disso, é mostrado nesse arquivo somente essas 3 variáveis, já que são mais correlacinadas com a target.
+Por conta disso, é mostrado nesta documentação somente essas 3 variáveis, já que são mais correlacinadas com a target linearmente.
 
 ### Nova métrica estudada de análise da variável para ser usada: T-Student Test
 A métrica **T-Student** está sendo usada para dizer se uma variável tem uma diferença de média significativa entre sua classificação binária para alguma variável.
@@ -105,7 +105,6 @@ O perfil médio visivelmente é uma variável muito boa para descrever o modelo,
 ![Desvio Padrão do Perfil](./dataviz/kurtosis-of-integrated-profile-x-target-boxplot.png)
 
 ![Desvio Padrão do Perfil](./dataviz/kurtosis-of-integrated-profile-x-target-histplot.png)
-
 
 A curtose do perfil é também uma variável muito boa para descrever o modelo, o que já era esperado pelo correlação de Pearson, no caso até a melhor variável. Como se pode ver os valores cobertos para 0 e 1 são diferentes, o que permite classificar praticamente com certeza muitos membros se é uma estrela de nêutron ou não somente a partir dessa variável. Funciona quase que de forma inversa à variável anterior. O histgrama em caso de Estrela de Nêutron sofre um grande shift à direita e uma distribuição praticamente uniforme.
 
