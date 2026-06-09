@@ -11,6 +11,10 @@ scikit-learn = "*"
 joblib = "*"
 optuna = "*"
 pingouin = "*"
+fastapi = "*"
+uvicorn = "*"
+pydantic = "*"
+matplotlib-stubs = "*"
 
 [dev-packages]
 

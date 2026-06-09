@@ -1,5 +1,4 @@
 # Regressão Logística - Classificador para Estrelas de Nêutrons Pulsares
-
 ![Python](https://img.shields.io/badge/Python-3.11.0-orange?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-orange?style=for-the-badge&logo=fastapi&logoColor=white)
 ![Uvicorn](https://img.shields.io/badge/Uvicorn-orange?style=for-the-badge)
@@ -49,34 +48,41 @@ uvicorn api:app --host 0.0.0.0 --port 8080
 ### API com Docker
 Testar na porta 3333 do postman na rota /classify
 ```bash
-docker build -t modeloqualidadefrutas .
-docker run -d --name mymodelapp -p 3333:8080 modeloqualidadefrutas
+docker build -t modelpulsar .
+docker run -d --name mymodelapp -p 3333:8080 modelpulsar
 ```
 ### Exemplo de body para a requisição
 ```bash
 {
-    "A_id": 4,
-    "Size": 1.36421682,
-    "Weight": -1.296611877,
-    "Sweetness": -0.384658206,
-    "Crunchiness": -0.55300577,
-    "Juiciness": 3.030874354,
-    "Ripeness": -1.303849429,
-    "Acidity": 0.501984036
+  "mean_integrated_profile": 140.5625,
+  "std_integrated_profile": 55.68378214,
+  "kurtosis_integrated_profile": -0.234571412,
+  "skewness_integrated_profile": -0.699648398,
+  "mean_dmsnr_curve": 3.199832776,
+  "std_dmsnr_curve": 19.11042633,
+  "kurtosis_dmsnr_curve": 7.975531794,
+  "skewness_dmsnr_curve": 74.24222492
 }
 ```
 
 ## Análise Exploratória dos Dados (EDA)
+### Observações iniciais
+1. Não há dados nulos
+2. Dados contínuos não vêm na mesma medida, logo há necessidade de usar um Transformer de Standar Scaler.
+
 ### Variável Target
-![Qualidade](./dataviz/quality-barplot.png)
-A distribuição da variável target é praticamente uniforme. Sabendo disso, classificar ambos valores binários é importante, logo a métrica escolhida será a ***'F1-Score'***.
+![Estrela de Nêutron](./dataviz/porcentagem-estrelas-barplot.png)
+
+A distribuição da variável target é desbalanceada. Sabendo disso, classificar ambos valores binários é importante, logo a métrica escolhida será a ***'F1-Score'*** com average *'macro'*. Ou seja, ele calcula o f1-score para 0 e o f1-score para 1 e faz a média de ambos.
 
 ### Análises Bivariadas
-![Qualidade](./dataviz/pairplot.png)
+![Matriz de Correlação de Pearson](./dataviz/pearson-correlation.png)
 
-O pairplot revela que, com exceção da target, os dados seguem uma distribuição normal. Além disso, as variáveis não mostram uma relação clara entre si.
+A matriz de correlação de Pearson já revela que a curva DM-SNR tem os valores que menos impactam linearmente falando como um todo, pois das 8 variáveis independentes, as 3 mais correlacionadas não estão nesta curva. Issojá sugere que talvez não seja preciso usar todas as variáveis para o modelo de classificação.
 
-### Nova métrica estudada de análise da variável para ser usada? T-Student Test
+Por conta disso, é mostrado nesse arquivo somente essas 3 variáveis, já que são mais correlacinadas com a target.
+
+### Nova métrica estudada de análise da variável para ser usada: T-Student Test
 A métrica **T-Student** está sendo usada para dizer se uma variável tem uma diferença de média significativa entre sua classificação binária para alguma variável.
 Assume a seguinte Hipótese nula(H0):
 + H0: Os 2 grupos não apresentam uma diferença média significativa.
@@ -86,30 +92,32 @@ Assume a seguinte Hipótese nula(H0):
 
 Ex: divide os dados de peso da fruta a partir da classificação de qualidade. Se a amostra *'good'* e a mostra *'bad'* tiverem uma diferença média não significativa, há uma evidência(não é uma prova) para não usar essa variável como uma variável significativa da amostra.
 
-### Peso
-![Peso](./dataviz/weight-by-quality-boxplot.png)
+As três variáveis abaixo obtiveram p-valor próximo de 0, logo rejeitam a hipótese nula e indicam evidência muito forte de apresentarem uma diferença média significativa.
 
-O peso não aparenta ser uma variável muito impactante para determinar a variável dependente. A média de ambas situações de qualidade é bem próxima, o que muda é a amplitude dos dados. As frutas nos extremos tendem a ser frutas boas nessa amostra.<br/>
-O teste T-Student revelou um p-value de 0.92, logo a hipótese nula não é aceita. Isso mostra que o Peso realmente apresenta evidências de não ser bom por si só para o modelo de classificação.
+### Variável Perfil Médio
+![Perfil Médio Boxplot](./dataviz/mean-of-integrated-profile-x-target-boxplot.png)
 
-### Doçura
-![Doçura](./dataviz/sweetness-by-quality-boxplot.png)
+![Perfil Médio Histogram](./dataviz/mean-of-integrated-profile-x-target-histplot.png)
 
-A doçura aparenta ser uma variável impactante para determinar a variável dependente. A média de ambas situações de qualidade é diferente. Além disso, as frutas boas tendem a ser deslocadas pra cima, ou seja, são mais doces<br/>
-O teste T-Student revelou um p-value de ≃ 0, logo a hipótese nula é rejeitada. Isso mostra que a doçura realmente apresenta evidências de ser boa para o modelo de classificação.
+O perfil médio visivelmente é uma variável muito boa para descrever o modelo, o que já era esperado pelo correlação de Pearson. Como se pode ver os valores cobertos para 0 e 1 são diferentes, o que permite classificar praticamente com certeza muitos membros se é uma estrela de nêutron ou nãosomente a partir dessa variável.
 
-### Tamanho
-![Tamanho](./dataviz/size-by-quality-boxplot.png)
+### Quão extremo é o sinal (Curtose)
+![Desvio Padrão do Perfil](./dataviz/kurtosis-of-integrated-profile-x-target-boxplot.png)
 
-O tamanho aparenta ser uma variável impactante para determinar a variável dependente. A média de ambas situações de qualidade é diferente. Além disso, as frutas boas tendem a ser deslocadas pra cima, ou seja, são maiores<br/>
-O teste T-Student revelou um p-value de ≃ 0, logo a hipótese nula é rejeitada. Isso mostra que o tamanho realmente apresenta evidências de ser bom para o modelo de classificação.
+![Desvio Padrão do Perfil](./dataviz/kurtosis-of-integrated-profile-x-target-histplot.png)
 
-### Matriz de Correlação de Pearson
-![Matriz de Correlação](./dataviz/matriz-correlacao.png)
 
-Pela matriz de correlação, vê-se que nenhuma variável tem uma correlação forte com a qualidade, o que mostra uma dificuldade dos dados em explicar a classificação.
+A curtose do perfil é também uma variável muito boa para descrever o modelo, o que já era esperado pelo correlação de Pearson, no caso até a melhor variável. Como se pode ver os valores cobertos para 0 e 1 são diferentes, o que permite classificar praticamente com certeza muitos membros se é uma estrela de nêutron ou não somente a partir dessa variável. Funciona quase que de forma inversa à variável anterior. O histgrama em caso de Estrela de Nêutron sofre um grande shift à direita e uma distribuição praticamente uniforme.
+
+### Assimetria do sinal (Skewness)
+![Assimetria](./dataviz/skewness-of-integrated-profile-x-target-boxplot.png)
+
+![Assimetria](./dataviz/skewness-of-integrated-profile-x-target-histplot.png)
+
+A assimetria do perfil(sinal) é também uma variável muito boa para descrever o modelo, o que já era esperado pelo correlação de Pearson. Como se pode ver os valores cobertos para 0 e 1 são diferentes, o que permite classificar praticamente com certeza muitos membros se é uma estrela de nêutron ou não somente a partir dessa variável. Mostra que estrelas tem uma assimetria positiva grande(cauda longa à direita) em geral, enquanto não-estrelas de nêutron não tendem a não ter uma assimetria(assimetria = 0).
 
 ## Treinamento do modelo
+
 O modelo uso o algoritmo de Regressão Logística clássico usando todas as variáveis. O modelo de separação de teste foi a separação aleatória dos dados em conjunto de treino(70% da amostra) e de teste(30% da amostra). Em seguida, tentou-se fazer tuning de hiperparâmetros com ***Optuna***, que foram:
 
 1. C-value
@@ -121,43 +129,64 @@ Esses parâmetros buscaram nessa ordem:
 2. Maximizar o **F1-Score**
 3. Minimizar o **Log Loss**
 
-O modelo com tuning de hiperparâmetros não resultou em uma melhora do modelo, logo o modelo que permaneceu foi o caso base.
+O modelo com tuning de hiperparâmetros não resultou em uma melhora do modelo significativa, logo o modelo que permaneceu foi o caso base.
+
+Em seguida, também com ***Optuna***, buscou-se otimizar o modelo com menos variáveis. Com o uso de somente as 5 melhores variáveis(Uso de SelectKBest com f_classifier) ao invés de 8, o modelo conseguiu gerar classes mais fortes e piorar muito pouco o f1-score. Isso foi interessante, já que um modelo mais leve foi capaz de explicar tão bem quanto o modelo que usa todas as variáveis. Com isso, o caso base foi mantido
 
 ## Métricas do Modelo
-### Curva ROC e Área sob a curva
-![Curva ROC](./dataviz/curva-roc-baseline.png)
+### Modelo Baseline
+![Curva ROC](./dataviz/modelo/modelo-baseline-curva-roc.png)
 
-|Área sob curva ROC|
-|:-:|
-|≃ 0.841457|
+|Área sob curva ROC|F1-Score macro avg|Recall macro avg|Precision macro avg|Accuracy|Log Loss|
+|:-:|:-:|:-:|:-:|:-:|:-:|
+|≃ 0.9786|≃ 0.9310|≃ 0.9|≃ 0.96|≃ 0.98|≃ 0.795377|
 
 A área sob a curva foi de ≃ 0.8415 unidades de área(u.a). Um classificador aleatório que chuta aleatoriamente a classificação tem 50% de acerto, ou seja, tem uma área de 0.5, cuja curva representa a reta vermelha no gráfico. **Por ter uma curva acima dessa linha/ter uma área maior que essa linha, o modelo é melhor que um classificador aletório.**
 
-### F1-Score, Accuracy e Precision
-|F1-Score|Acuracy|Precision|
+![Matriz de Confusão](./dataviz/modelo/modelo-baseline-matriz-de-confusao.png)
+
+A matriz de confusão elucida os resultados. No caso, é possível ver o grande desbalanceio de estrelas no teste. É possível ver que o modelo dificilmente classifica uma não-estrela como estrela. Contudo, deixa passar significativamente(cerca de 1/6) algumas estrelas de nêutrons. O *'recall'* do modelo para o caso 1 é 0.81, o que elucida esse erro.
+
+### Modelo com hiperparâmetros otimizados
+> Métricas obtidas:
+
+|Área sob curva ROC|F1-Score|Log-Loss|
 |:-:|:-:|:-:|
-|≃ 0.778790|0.7775|≃ 0.78|
+|≃ 0.9781|≃ 0.9348|≃ 0.7551|
 
-O F1-Score revela que o modelo não é excelente, mas é um modelo razoável. A acurácia confirma que o modelo está acertando 77.75% dos dados, o que mostra sua razoabilidade.
+> Dados obtidos dos melhores hiperparâmetros:
+1. O F1-Score é melhorado ligeiramente.
+2. O Log Loss é melhorado ligeiramente.
+3. A área sob a curva ROC diminui.
 
-### Matriz de confusão
-![Matriz de Confusão](./dataviz/modelo/matriz-de-confusao-baseline.png)
+> Hiperparâmetros selecionados:
 
-A matriz de confusão mostra esses dados, mas de forma numérica. É possível ver que há muitos falso positivos e falso negativos. O ideal seria encontrar um modelo que melhora isso, apesar de não estar ruim.
+|Penalty|C-valor|
+|:-:|:-:|
+|l2|10|
 
-## Um ensaio de aumentar o threshold
-O threshold usado no modelo é o padrão de 0.5. Ou seja, se houver a probabilidade >= 0.5 de ser 1, o modelo classifica como 1. Contudo, houve um estudo para mostrar o que haveria se o threshold fosse maior para somente aceitar aqueles que tem uma certeza maior de ser classiicado como 1.
+### Modelo com KBest variáveis
 
-![Ensaio - SUbindo Threshold](./dataviz/modelo/aumento-do-threshold-x-f1-score.png)
+Usou-se o f-classifier para selecionar as k melhores variáveis, visto que elas apresentavam valores contínuos e negativos, o que não é bom para o teste Qui-Quadrado.
 
-Como é possível ver, o F1-Score cai com o aumento do *'Threshold'*. Possivelmente o modelo toma decisões muitas vezes sem conseguir afirmar com muita certeza se a fruta é de qualidade *good'* ou *'bad '*.
+> Dados obtidos do melhor k:
 
-O *Threshold* alto seria muito bom caso o modelo tivesse mais certeza das suas decisões. Exemplo: classificar uma transferência como fraude não é interessante se não estivermos muito certos de ser uma fraude. Com o threshold baixo, mesmo aceitando muito, talvez muitas frutas sejam enviadas sem estarem boas de fato, sobretudo quando olhamos para uma escala de milhões de frutas, o que pode gerar prejuízo.
+|número de variáveis (k)|Área sob curva ROC|F1-Score|Log-Loss|
+|:-:|:-:|:-:|:-:|
+|5|≃ 0.9827|≃ 0.92998|≃ 0.8054|
+
+Com somente as 5 melhores variáveis, obteve-se:
+1. Uma área sob a curva ROC maior que o modelo baseline.
+2. Um F1-Score ligeiramente menor que o modelo baseline.
+3. Um log-loss ligeiramente maior que o modelo baseline.
+
+Apesar e acertar ligeiramente menos e ter um pouco mais de perda, o modelo mais simples é praticamente capaz de explicar da mesma forma que o modelo baseline.
 
 ## Melhorias para o modelo
 1. Certamente seriam necessários mais registros.
-2. Certamente é possível encontrar mais variáveis para essas frutas.
-3. Especificidade: é melhor olhar para um tipo de fruta, que olhar de forma generalizada. Ex: É melhor fazer uma amostra de morango, outra de abacaxis, outra de bananas, etc, que fazerr uma análise de todas juntas.
+2. Certamente é possível encontrar mais variáveis para essas estrelas.
+3. Escolha de divisão dos testes por Stratified K-Folds já que a classe target é desbalanceada.
+4. O logloss é de 0.8, o que é considerado razoável. Logo o modelo, embora acerte muito, não está acertando de forma muito confiante. O ideal seria ter um log loss de pelo menos 0.2 para ser ideal.
 
 ## Créditos
-Pedro Sodré, 8 de Junho de 2026
+Pedro Sodré, 9 de Junho de 2026
