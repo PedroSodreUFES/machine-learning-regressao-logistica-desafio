@@ -167,7 +167,7 @@ A matriz de confusão elucida os resultados. No caso, é possível ver o grande 
 
 ### Modelo com KBest variáveis
 
-Usou-se o f-classifier para selecionar as k melhores variáveis, visto que elas apresentavam valores contínuos e negativos, o que não é bom para o teste Qui-Quadrado.
+Usou-se o f-classif para selecionar as k melhores variáveis, visto que elas apresentavam valores contínuos e negativos, o que não é bom para o teste Qui-Quadrado.
 
 > Dados obtidos do melhor k:
 
@@ -180,7 +180,7 @@ Com somente as 5 melhores variáveis, obteve-se:
 2. Um F1-Score ligeiramente menor que o modelo baseline.
 3. Um log-loss ligeiramente maior que o modelo baseline.
 
-Apesar e acertar ligeiramente menos e ter um pouco mais de perda, o modelo mais simples é praticamente capaz de explicar da mesma forma que o modelo baseline.
+Apesar de acertar ligeiramente menos e ter um pouco mais de perda, o modelo mais simples é praticamente capaz de explicar da mesma forma que o modelo baseline.
 
 ## Melhorias para o modelo
 1. Certamente seriam necessários mais registros.
