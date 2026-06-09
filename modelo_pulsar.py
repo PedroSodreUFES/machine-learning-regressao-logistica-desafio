@@ -271,7 +271,8 @@ X_train, X_test, y_train, y_test = train_test_split(
   y,
   shuffle=True,
   random_state=51,
-  train_size=0.8
+  train_size=0.8,
+  # stratify=y -> teoricamente melhora por balancear, mas aqui não melhorou.
 )
 
 colunas_numericas = [

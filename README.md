@@ -187,5 +187,8 @@ Apesar de acertar ligeiramente menos e ter um pouco mais de perda, o modelo mais
 3. Escolha de divisão dos testes por Stratified K-Folds já que a classe target é desbalanceada.
 4. O logloss é de 0.8, o que é considerado razoável. Logo o modelo, embora acerte muito, não está acertando de forma muito confiante. O ideal seria ter um log loss de pelo menos 0.2 para ser ideal.
 
+## Considerações
+Usou-se stratify para separar dados de treino e teste com o objetivo de manter a mesma proporção de dados devido ao desbalanceio da classe target. Contudo, por azar, a estratificação piorou o modelo, logo isso justifica a ausência desse parâmetro, que idealmente deveria ajudar o modelo.
+
 ## Créditos
 Pedro Sodré, 9 de Junho de 2026
