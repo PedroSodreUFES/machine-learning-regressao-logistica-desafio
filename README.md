@@ -83,7 +83,7 @@ docker run -d --name mymodelapp -p 3333:8080 modelpulsar
 ## Análise Exploratória dos Dados (EDA)
 ### Observações iniciais
 1. Não há dados nulos
-2. Dados contínuos não vêm na mesma medida, logo há necessidade de usar um Transformer de Standar Scaler.
+2. Dados contínuos não vêm na mesma medida, logo há necessidade de usar um Transformer de Standard Scaler.
 
 ### Variável Target
 ![Estrela de Nêutron](./dataviz/porcentagem-estrelas-barplot.png)
